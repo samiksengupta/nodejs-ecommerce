@@ -1,8 +1,8 @@
 const { handleServerErrorResponse, handleNotFoundResponse } = require("../helpers");
-const { Category, Product } = require("../models");
+const { Product } = require("../models");
 
 const index = (req, res) => {
-    Category.findAll().then(items => {
+    Product.findAll().then(items => {
         res.status(200).json(items);
         res.end();
     }).catch(error => {
@@ -10,26 +10,13 @@ const index = (req, res) => {
     });
 }
 
-const indexProducts = (req, res) => {
-    Category.findByPk(req.params.id, {
-        include: [Product]
-    }).then(data => {
-        if(data) {
-            res.status(200).json(data.Products);
-            res.end();
-        }
-        else {
-            handleNotFoundResponse(res);
-        }
-    }).catch(error => {
-        handleServerErrorResponse(res, error);
-    });
-}
-
 const create = (req, res) => {
-    Category.create({
+    Product.create({
         slug: req.body.slug,
         name: req.body.name,
+        description: req.body.description,
+        price: req.body.price,
+        categoryId: req.body.categoryId,
     }).then(data => {
         res.status(201).json(data);
         res.end();
@@ -39,7 +26,7 @@ const create = (req, res) => {
 }
 
 const read = (req, res) => {
-    Category.findByPk(req.params.id).then(data => {
+    Product.findByPk(req.params.id).then(data => {
         if(data) {
             res.status(200).json(data);
             res.end();
@@ -53,10 +40,13 @@ const read = (req, res) => {
 }
 
 const update = (req, res) => {
-    Category.findByPk(req.params.id).then(data => {
+    Product.findByPk(req.params.id).then(data => {
         if(data) {
             data.slug = req.body.slug;
             data.name = req.body.name;
+            data.description = req.body.description;
+            data.price = req.body.price;
+            data.categoryId = req.body.categoryId;
             data.save().then(data => {
                 res.status(200).json(data);
                 res.end();
@@ -73,7 +63,7 @@ const update = (req, res) => {
 }
 
 const destroy = (req, res) => {
-    Category.findByPk(req.params.id).then(data => {
+    Product.findByPk(req.params.id).then(data => {
         if(data) {
             data.destroy().then(data => {
                 res.status(200).json(data);
@@ -92,7 +82,6 @@ const destroy = (req, res) => {
 
 module.exports = {
     index: index,
-    indexProducts: indexProducts,
     create: create,
     read: read,
     update: update,

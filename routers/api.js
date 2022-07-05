@@ -1,5 +1,6 @@
 const express = require('express');
 const categoryController = require('../controllers/category.controller');
+const productController = require('../controllers/product.controller');
 
 const apiRouter = express.Router();
 
@@ -17,5 +18,17 @@ apiRouter.route('/categories/:id')
     .get(categoryController.read)
     .put(categoryController.update)
     .delete(categoryController.destroy);
+
+apiRouter.route('/categories/:id/products')
+    .get(categoryController.indexProducts);
+
+apiRouter.route('/products')
+    .get(productController.index)
+    .post(productController.create);
+
+apiRouter.route('/products/:id')
+    .get(productController.read)
+    .put(productController.update)
+    .delete(productController.destroy);
 
 module.exports = apiRouter;
