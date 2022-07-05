@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const { handleServerErrorResponse, handleNotFoundResponse } = require("../helpers");
 const { Category, Product } = require("../models");
 
@@ -11,8 +12,34 @@ const index = (req, res) => {
 }
 
 const indexProducts = (req, res) => {
+    let where = {};
+    if(req.query.minprice || req.query.maxprice) {
+        where[Op.and] = {
+            price: {
+                [Op.gte]: req.query.minprice || 0,
+                [Op.lte]: req.query.maxprice || 999999,
+            }
+        }
+    }
+    if(req.query.keywords) {
+        const keywords = req.query.keywords.split(/[ ,]+/);
+        let like = [];    
+        for(word of keywords) {
+            like.push({
+                [Op.like]: `%${word}%`
+            });
+        }
+        where[Op.and] = {
+            name: {
+                [Op.or]: like
+            }
+        };
+    }
     Category.findByPk(req.params.id, {
-        include: [Product]
+        include: {
+            model: Product,
+            where: where
+        }
     }).then(data => {
         if(data) {
             res.status(200).json(data.Products);
