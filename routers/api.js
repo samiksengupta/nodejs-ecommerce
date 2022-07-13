@@ -1,4 +1,5 @@
 const express = require('express');
+const accountController = require('../controllers/account.controller');
 const authController = require('../controllers/auth.controller');
 const categoryController = require('../controllers/category.controller');
 const productController = require('../controllers/product.controller');
@@ -20,6 +21,7 @@ apiRouter.route('/logout').post(authController.logout);
 apiRouter.route('/refresh').post(authController.refresh);
 
 apiRouter.use('/users', authenticate);
+
 apiRouter.route('/users')
     .get(userController.index)
     .post(authorize, userController.create);
@@ -30,6 +32,7 @@ apiRouter.route('/users/:id')
     .delete(authorize, userController.destroy);
 
 apiRouter.use('/categories', authenticate);
+
 apiRouter.route('/categories')
     .get(categoryController.index)
     .post(authorize, categoryController.create);
@@ -43,6 +46,7 @@ apiRouter.route('/categories/:id/products')
     .get(categoryController.indexProducts);
 
 apiRouter.use('/products', authenticate);
+
 apiRouter.route('/products')
     .get(productController.index)
     .post(authorize, productController.create);
@@ -51,5 +55,10 @@ apiRouter.route('/products/:id')
     .get(productController.read)
     .put(authorize, productController.update)
     .delete(authorize, productController.destroy);
+
+apiRouter.route('/cart')
+    .get(authenticate, accountController.getCart)
+    .put(authenticate, accountController.setCart)
+    .delete(authenticate, accountController.clearCart);
 
 module.exports = apiRouter;

@@ -1,30 +1,17 @@
 'use strict';
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Products', {
+        await queryInterface.createTable('Carts', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER.UNSIGNED
             },
-            slug: {
-                type: Sequelize.STRING,
-                unique:true
-            },
-            name: {
-                type: Sequelize.STRING
-            },
-            description: {
-                type: Sequelize.TEXT
-            },
-            price: {
-                type: Sequelize.INTEGER.UNSIGNED
-            },
-            categoryId: {
+            userId: {
                 type: Sequelize.INTEGER.UNSIGNED,
                 references: {
-                    model: 'categories',
+                    model: 'users',
                     key: 'id'
                 },        
                 onUpdate: 'CASCADE',
@@ -41,6 +28,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Products');
+        await queryInterface.dropTable('Carts');
     }
 };

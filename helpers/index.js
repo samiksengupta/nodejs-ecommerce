@@ -37,7 +37,7 @@ module.exports = {
         const jitter = parseInt(Math.random() * 120);
         const lifespan = 600 + jitter;
         return jwt.sign({ 
-            userId: user.id,
+            id: user.id,
             isAdmin: user.isAdmin
         }, process.env.JWT_SECRET, {
             expiresIn: `${lifespan}s`

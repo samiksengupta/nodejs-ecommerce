@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            this.hasOne(models.Cart);
         }
 
         static async authenticate(username, password) {
@@ -29,7 +30,10 @@ module.exports = (sequelize, DataTypes) => {
     }
     User.init({
         name: DataTypes.STRING,
-        username: DataTypes.STRING,
+        username: {
+            type: DataTypes.STRING,
+            unique: true
+        },
         password: DataTypes.STRING,
         refreshToken: DataTypes.STRING,
         isAdmin: DataTypes.BOOLEAN,
