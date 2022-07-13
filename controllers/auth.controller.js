@@ -1,6 +1,19 @@
 const { handleServerErrorResponse, handleNotFoundResponse, generateAccessToken, generateRefreshToken } = require("../helpers");
 const { User } = require("../models");
 
+const register = (req, res) => {
+    User.create({
+        name: req.body.name,
+        username: req.body.username,
+        password: req.body.password
+    }).then(data => {
+        res.status(201).json(data);
+        res.end();
+    }).catch(error => {
+        handleServerErrorResponse(res, error);
+    });
+}
+
 const login = (req, res) => {
     User.authenticate(req.body.username, req.body.password).then((user) => {
         if(user) {
@@ -32,6 +45,7 @@ const refresh = (req, res) => {
 }
 
 module.exports = {
+    register: register,
     login: login,
     logout: logout,
     refresh: refresh,

@@ -44,6 +44,13 @@ module.exports = {
         });
     },
 
+    verifyAccessToken: async (token) => {
+        return await jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
+            if(err) return false;
+            return payload;
+        });
+    },
+
     generateRefreshToken: (user) => {
         return require('crypto').randomBytes(32).toString('hex');
     }
