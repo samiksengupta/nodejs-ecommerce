@@ -8,6 +8,7 @@ const auth = require('../middlewares/auth');
 const { authenticate, authorize } = require('../middlewares/auth');
 
 const apiRouter = express.Router();
+const apiRouterSecure = express.Router();
 
 apiRouter.get('/', (req, res) => {
     res.status(200).send({
@@ -20,45 +21,44 @@ apiRouter.route('/login').post(authController.login);
 apiRouter.route('/logout').post(authController.logout);
 apiRouter.route('/refresh').post(authController.refresh);
 
-apiRouter.use('/users', authenticate);
+apiRouterSecure.use(authenticate);
 
-apiRouter.route('/users')
+apiRouterSecure.route('/users')
     .get(userController.index)
     .post(authorize, userController.create);
 
-apiRouter.route('/users/:id')
+apiRouterSecure.route('/users/:id')
     .get(userController.read)
     .put(authorize, userController.update)
     .delete(authorize, userController.destroy);
 
-apiRouter.use('/categories', authenticate);
-
-apiRouter.route('/categories')
+apiRouterSecure.route('/categories')
     .get(categoryController.index)
     .post(authorize, categoryController.create);
 
-apiRouter.route('/categories/:id')
+apiRouterSecure.route('/categories/:id')
     .get(categoryController.read)
     .put(authorize, categoryController.update)
     .delete(authorize, categoryController.destroy);
 
-apiRouter.route('/categories/:id/products')
+apiRouterSecure.route('/categories/:id/products')
     .get(categoryController.indexProducts);
 
-apiRouter.use('/products', authenticate);
-
-apiRouter.route('/products')
+apiRouterSecure.route('/products')
     .get(productController.index)
     .post(authorize, productController.create);
 
-apiRouter.route('/products/:id')
+apiRouterSecure.route('/products/:id')
     .get(productController.read)
     .put(authorize, productController.update)
     .delete(authorize, productController.destroy);
 
-apiRouter.route('/cart')
-    .get(authenticate, accountController.getCart)
-    .put(authenticate, accountController.setCart)
-    .delete(authenticate, accountController.clearCart);
+apiRouterSecure.route('/cart')
+    .get(accountController.getCart)
+    .put(accountController.setCart)
+    .delete(accountController.clearCart);
 
-module.exports = apiRouter;
+module.exports = {
+    apiRouter: apiRouter, 
+    apiRouterSecure: apiRouterSecure
+};
