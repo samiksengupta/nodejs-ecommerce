@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             this.belongsTo(models.User);
             this.belongsToMany(models.Product, {
-                through: 'cart-product'
+                through: 'cart_product'
             });
         }
     }
@@ -21,9 +21,6 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         modelName: 'Cart',
-    });
-    Cart.beforeCreate(async (user, options) => {
-        user.password = await hashPassword(user.password);
     });
     return Cart;
 };
