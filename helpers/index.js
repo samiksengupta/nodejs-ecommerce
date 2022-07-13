@@ -1,3 +1,6 @@
+require('dotenv').config();
+const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken");
 const server = require("../config/server");
 
 module.exports = {
@@ -20,5 +23,28 @@ module.exports = {
             message: 'Resource does not exist'
         });
         res.end();
+    },
+
+    hashPassword: async (raw) => {
+        return await bcrypt.hash(raw, 10);
+    },
+
+    comparePassword: async (raw, hash) => {
+        return await bcrypt.compare(raw, hash);
+    },
+
+    generateAccessToken: (user) => {
+        const jitter = parseInt(Math.random() * 120);
+        const lifespan = 600 + jitter;
+        return jwt.sign({ 
+            userId: user.id,
+            isAdmin: user.isAdmin
+        }, process.env.JWT_SECRET, {
+            expiresIn: `${lifespan}s`
+        });
+    },
+
+    generateRefreshToken: (user) => {
+        return require('crypto').randomBytes(32).toString('hex');
     }
 };
