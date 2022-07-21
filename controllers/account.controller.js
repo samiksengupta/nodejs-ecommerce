@@ -14,18 +14,12 @@ const getCart = (req, res) => {
 
 const setCart = (req, res) => {
     User.findByPk(req.user.id).then((user) => {
-        console.log(user, req.body.products);
         user.createCart({ abc: 123 }).then(cart => {
             for(cartProduct of req.body.products) {
                 Product.findByPk(cartProduct.id).then(product => {
-                    cart.addProduct(product, { through: { quantity: cartProduct.quantity, price: product.price }});
+                    cart.addProduct(product, { through: { quantity: cartProduct.quantity, price: product.price }}).then(data => {}).catch(err => console.log(err));
                 })
             }
-            /* cart.addProducts(req.body.products.map(obj => {
-                return obj.id;
-            }), {
-
-            }); */
         }).catch(err => {
             console.log(err);
         });

@@ -71,3 +71,13 @@ npm run setup
 ```bash
 npm run reset
 ```
+
+### Todo
+
+* Create api to regenerate token
+* Operate on a single cart entry per user
+* Order features
+    * Cart to Order
+    * Order placement
+    * Order fetch
+* Unit tests

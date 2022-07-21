@@ -1,8 +1,7 @@
 'use strict';
-const {
-    Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
+
     class Product extends Model {
         /**
          * Helper method for defining associations.
@@ -13,7 +12,9 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             this.belongsTo(models.Category);
             this.belongsToMany(models.Cart, {
-                through: 'cart_product'
+                through: 'CartProduct',
+                foreignKey: 'productId',
+                otherKey: 'cartId'
             });
         }
     }
