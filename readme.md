@@ -50,6 +50,7 @@ PROD_DB_PASSWORD=<YOUR DB PASSWORD HERE>
 PROD_DB_DIALECT=mysql
 
 JWT_SECRET=<YOUR JWT SECRET HERE>
+JWT_LIFESPAN=600
 ```
 
 When you have set up your database configuration, **run migrations and seeders** to generate tables from the schema and populate them with data. The following scripts can be used to quickly setup the server and run migrations/seeders.
