@@ -4,7 +4,6 @@ const authController = require('../controllers/auth.controller');
 const categoryController = require('../controllers/category.controller');
 const productController = require('../controllers/product.controller');
 const userController = require('../controllers/user.controller');
-const auth = require('../middlewares/auth');
 const { authenticate, authorize } = require('../middlewares/auth');
 
 const apiRouter = express.Router();

@@ -1,4 +1,3 @@
-require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const server = require("../config/server");
@@ -35,17 +34,17 @@ module.exports = {
 
     generateAccessToken: (user) => {
         const jitter = parseInt(Math.random() * 120);
-        const lifespan = 600 + jitter;
+        const lifespan = server.JWT_LIFESPAN + jitter;
         return jwt.sign({ 
             id: user.id,
             isAdmin: user.isAdmin
-        }, process.env.JWT_SECRET, {
+        }, server.JWT_SECRET, {
             expiresIn: `${lifespan}s`
         });
     },
 
     verifyAccessToken: async (token) => {
-        return await jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
+        return await jwt.verify(token, server.JWT_SECRET, (err, payload) => {
             if(err) return false;
             return payload;
         });

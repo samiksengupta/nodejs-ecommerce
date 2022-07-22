@@ -1,34 +1,51 @@
 const { handleServerErrorResponse, handleNotFoundResponse } = require("../helpers");
-const { User, Product } = require("../models");
+const { User, Product, Cart } = require("../models");
 
-const getCart = (req, res) => {
-    User.findByPk(req.user.id).then((user) => {
-        user.getCart().then(cart => {
-            console.log(cart);
-        }).catch(err => {
-            console.log(err);
-        });
+const getCart = async (req, res) => {
+    const user = await User.findByPk(req.user.id, {
+        include: {
+            model: Cart,
+            include: Product
+        }
     });
-    res.status(200).send();
+    if(user.Cart) res.status(200).json(user.Cart);
+    else {
+        await user.createCart();
+        res.status(201).json(await user.getCart({
+            include: Product
+        }).catch(error => handleServerErrorResponse(res, error)));
+    }
 }
 
-const setCart = (req, res) => {
-    User.findByPk(req.user.id).then((user) => {
-        user.createCart({ abc: 123 }).then(cart => {
-            for(cartProduct of req.body.products) {
-                Product.findByPk(cartProduct.id).then(product => {
-                    cart.addProduct(product, { through: { quantity: cartProduct.quantity, price: product.price }}).then(data => {}).catch(err => console.log(err));
-                })
-            }
-        }).catch(err => {
-            console.log(err);
-        });
-    });
-    res.status(200).send();
+const setCart = async (req, res) => {
+    const user = await User.findByPk(req.user.id);
+    let cart = await user.getCart({
+        include: Product
+    }).catch(error => handleServerErrorResponse(res, error));
+    
+    if(!cart) cart = await user.createCart();
+    
+    for(let reqProduct of req.body.products) {
+        let product = await Product.findByPk(reqProduct.id).catch(error => handleNotFoundResponse(res));
+        await cart.addProduct(product, { through: { quantity: reqProduct.quantity, price: product.price }}).catch(error => handleServerErrorResponse(res, error));
+    }
+
+    if(cart) res.status(201).json(await user.getCart({
+        include: Product
+    }).catch(error => handleServerErrorResponse(res, error)));
+    else handleNotFoundResponse(res);
 }
 
-const clearCart = (req, res) => {
-    res.status(200).send();
+const clearCart = async (req, res) => {
+    const user = await User.findByPk(req.user.id);
+    let cart = await user.getCart().catch(error => handleServerErrorResponse(res, error));
+    if(cart) {
+        await cart.setProducts([]);
+        res.status(200).json(await user.getCart({
+            include: Product
+        }).catch(error => handleServerErrorResponse(res, error)));
+    }
+    else handleNotFoundResponse(res);
 }
 
 module.exports = {
