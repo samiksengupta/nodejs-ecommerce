@@ -1,5 +1,6 @@
 'use strict';
 const { Model } = require('sequelize');
+const { slugify } = require('../helpers');
 module.exports = (sequelize, DataTypes) => {
 
     class Product extends Model {
@@ -18,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
             });
         }
     }
+
     Product.init({
         slug: {
             type: DataTypes.STRING,
@@ -25,11 +27,24 @@ module.exports = (sequelize, DataTypes) => {
         },
         name: DataTypes.STRING,
         description: DataTypes.TEXT,
-        price: DataTypes.INTEGER.UNSIGNED,
+        price: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            get() {
+                return parseFloat(this.getDataValue('price') / 100);
+            },
+            set(value) {
+                this.setDataValue('price', parseInt(value) * 100);
+            }
+        },
         categoryId: DataTypes.INTEGER.UNSIGNED
     }, {
         sequelize,
         modelName: 'Product',
     });
+
+    Product.beforeCreate(async product => {
+        product.slug = product.slug || slugify(product.name);
+    })
+
     return Product;
 };

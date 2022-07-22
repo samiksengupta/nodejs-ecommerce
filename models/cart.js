@@ -1,5 +1,6 @@
 'use strict';
 const { Model } = require('sequelize');
+const { moneyFormat } = require('../helpers');
 module.exports = (sequelize, DataTypes) => {
 
     class Cart extends Model {
@@ -13,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
             this.belongsTo(models.User, {
                 foreignKey: 'userId'
             });
-            
+
             this.belongsToMany(models.Product, {
                 through: 'CartProduct',
                 foreignKey: 'cartId',
@@ -22,7 +23,16 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
     Cart.init({
-        userId: DataTypes.INTEGER.UNSIGNED
+        userId: DataTypes.INTEGER.UNSIGNED,
+        totalPrice: {
+            type: DataTypes.VIRTUAL,
+            get() {
+                const total = this.Products.reduce((prev, product) => {
+                    return prev + product.CartProduct.price
+                }, 0);
+                return total;
+            },
+        }
     }, {
         sequelize,
         modelName: 'Cart',

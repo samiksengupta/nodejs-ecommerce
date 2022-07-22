@@ -52,5 +52,13 @@ module.exports = {
 
     generateRefreshToken: (user) => {
         return require('crypto').randomBytes(32).toString('hex');
-    }
+    },
+
+    slugify: (string, appendTimestamp = false) => {
+        const slug = string.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+        if(appendTimestamp) {
+            slug = `${slug}-${Date.now()}`;
+        }
+        return slug;
+    },
 };

@@ -4,6 +4,7 @@ const authController = require('../controllers/auth.controller');
 const categoryController = require('../controllers/category.controller');
 const productController = require('../controllers/product.controller');
 const userController = require('../controllers/user.controller');
+const validator = require('../middlewares/validators');
 const { authenticate, authorize } = require('../middlewares/auth');
 
 const apiRouter = express.Router();
@@ -45,11 +46,11 @@ apiRouterSecure.route('/categories/:id/products')
 
 apiRouterSecure.route('/products')
     .get(productController.index)
-    .post(authorize, productController.create);
+    .post(authorize, validator.productCreate, productController.create);
 
 apiRouterSecure.route('/products/:id')
     .get(productController.read)
-    .put(authorize, productController.update)
+    .put(authorize, validator.productUpdate, productController.update)
     .delete(authorize, productController.destroy);
 
 apiRouterSecure.route('/cart')

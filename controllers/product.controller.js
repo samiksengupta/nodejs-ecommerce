@@ -1,83 +1,46 @@
 const { handleServerErrorResponse, handleNotFoundResponse } = require("../helpers");
 const { Product } = require("../models");
 
-const index = (req, res) => {
-    Product.findAll().then(items => {
-        res.status(200).json(items);
-        res.end();
-    }).catch(error => {
-        handleServerErrorResponse(res, error);
-    });
+const index = async (req, res) => {
+    const items = await Product.findAll().catch(error => handleServerErrorResponse(res, error));
+    res.status(200).json(items);
 }
 
-const create = (req, res) => {
-    Product.create({
+const create = async (req, res) => {
+    const data = await Product.create({
         slug: req.body.slug,
         name: req.body.name,
         description: req.body.description,
         price: req.body.price,
         categoryId: req.body.categoryId,
-    }).then(data => {
-        res.status(201).json(data);
-        res.end();
-    }).catch(error => {
-        handleServerErrorResponse(res, error);
-    });
+    }).catch(error => handleServerErrorResponse(res, error));
+    res.status(201).json(data);
+    
 }
 
-const read = (req, res) => {
-    Product.findByPk(req.params.id).then(data => {
-        if(data) {
-            res.status(200).json(data);
-            res.end();
-        }
-        else {
-            handleNotFoundResponse(res);
-        }
-    }).catch(error => {
-        handleServerErrorResponse(res, error);
-    });
+const read = async (req, res) => {
+    const data = await Product.findByPk(req.params.id).catch(error => handleServerErrorResponse(res, error));
+    if(!data) handleNotFoundResponse(res);
+    res.status(200).json(data);
 }
 
-const update = (req, res) => {
-    Product.findByPk(req.params.id).then(data => {
-        if(data) {
-            data.slug = req.body.slug;
-            data.name = req.body.name;
-            data.description = req.body.description;
-            data.price = req.body.price;
-            data.categoryId = req.body.categoryId;
-            data.save().then(data => {
-                res.status(200).json(data);
-                res.end();
-            }).catch(error => {
-                handleServerErrorResponse(res, error);
-            });
-        }
-        else {
-            handleNotFoundResponse(res);
-        }
-    }).catch(error => {
-        handleServerErrorResponse(res, error);
-    });
+const update = async (req, res) => {
+    let data = await Product.findByPk(req.params.id).catch(error => handleServerErrorResponse(res, error));
+    if(!data) handleNotFoundResponse(res);
+    data.slug = req.body.slug || data.slug;
+    data.name = req.body.name || data.name;
+    data.description = req.body.description || data.description;
+    data.price = req.body.price || data.price;
+    data.categoryId = req.body.categoryId || data.categoryId;
+    data = await data.save().catch(error => handleServerErrorResponse(res, error));;
+    res.status(200).json(data);
 }
 
-const destroy = (req, res) => {
-    Product.findByPk(req.params.id).then(data => {
-        if(data) {
-            data.destroy().then(data => {
-                res.status(200).json(data);
-                res.end();
-            }).catch(error => {
-                handleServerErrorResponse(res, error);
-            });
-        }
-        else {
-            handleNotFoundResponse(res);
-        }
-    }).catch(error => {
-        handleServerErrorResponse(res, error);
-    });
+const destroy = async (req, res) => {
+    let data = await Product.findByPk(req.params.id).catch(error => handleServerErrorResponse(res, error));
+    if(!data) handleNotFoundResponse(res);
+    data = await data.destroy().catch(error => handleServerErrorResponse(res, error));;
+    res.status(200).json(data);
 }
 
 module.exports = {
