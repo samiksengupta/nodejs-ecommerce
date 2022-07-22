@@ -16,10 +16,10 @@ apiRouter.get('/', (req, res) => {
     });
 });
 
-apiRouter.route('/register').post(authController.register);
-apiRouter.route('/login').post(authController.login);
+apiRouter.route('/register').post(validator.authRegister, authController.register);
+apiRouter.route('/login').post(validator.authLogin, authController.login);
 apiRouter.route('/logout').post(authController.logout);
-apiRouter.route('/refresh').post(authController.refresh);
+apiRouter.route('/refresh').post(validator.authRefresh, authController.refresh);
 
 apiRouterSecure.use(authenticate);
 

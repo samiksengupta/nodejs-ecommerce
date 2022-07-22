@@ -27,7 +27,13 @@ module.exports = (sequelize, DataTypes) => {
                     return user;
                 }
             }
-            return await false;
+            return false;
+        }
+        
+        toJSON() {
+            const user = Object.assign({}, this.dataValues);
+            delete user.password;
+            return user
         }
     }
     User.init({
@@ -42,6 +48,11 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         modelName: 'User',
+        scopes: {
+            withoutSecrets: {
+                attributes: { exclude: ['password', 'refreshToken'] },
+            }
+        },
     });
     User.beforeCreate(async (user, options) => {
         user.password = await hashPassword(user.password);

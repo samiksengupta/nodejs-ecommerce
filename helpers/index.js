@@ -29,12 +29,13 @@ module.exports = {
     },
 
     comparePassword: async (raw, hash) => {
+        console.log(raw, hash);
         return await bcrypt.compare(raw, hash);
     },
 
     generateAccessToken: (user) => {
         const jitter = parseInt(Math.random() * 120);
-        const lifespan = server.JWT_LIFESPAN + jitter;
+        const lifespan = +server.JWT_LIFESPAN + jitter;
         return jwt.sign({ 
             id: user.id,
             isAdmin: user.isAdmin
@@ -48,6 +49,10 @@ module.exports = {
             if(err) return false;
             return payload;
         });
+    },
+
+    decodeAccessToken: (token) => {
+        return jwt.decode(token);
     },
 
     generateRefreshToken: (user) => {
