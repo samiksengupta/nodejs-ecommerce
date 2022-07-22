@@ -76,10 +76,10 @@ npm run reset
 ### Todo
 
 * Create api to regenerate token
-* Operate on a single cart entry per user
+* ~~Operate on a single cart entry per user~~
 * Order features
     * Cart to Order
     * Order placement
     * Order fetch
-* Validation
+* ~~Validation~~
 * Unit tests
