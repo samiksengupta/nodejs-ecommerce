@@ -81,5 +81,6 @@ npm run reset
     * Cart to Order
     * Order placement
     * Order fetch
+* Product Search and filter
 * ~~Validation~~
 * Unit tests
