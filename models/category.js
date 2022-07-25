@@ -1,6 +1,8 @@
 'use strict';
 const { Model } = require('sequelize');
+const { slugify } = require('../helpers');
 module.exports = (sequelize, DataTypes) => {
+
     class Category extends Model {
         /**
          * Helper method for defining associations.
@@ -12,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
             this.hasMany(models.Product);
         }
     }
+
     Category.init({
         slug: {
             type: DataTypes.STRING,
@@ -24,5 +27,10 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         modelName: 'Category',
     });
+
+    Category.beforeCreate(async category => {
+        category.slug = category.slug || slugify(category.name);
+    })
+
     return Category;
 };

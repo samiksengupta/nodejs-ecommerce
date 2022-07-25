@@ -34,11 +34,11 @@ apiRouterSecure.route('/users/:id')
 
 apiRouterSecure.route('/categories')
     .get(categoryController.index)
-    .post(authorize, categoryController.create);
+    .post(authorize, validator.categoryCreate, categoryController.create);
 
 apiRouterSecure.route('/categories/:id')
     .get(categoryController.read)
-    .put(authorize, categoryController.update)
+    .put(authorize, validator.categoryUpdate, categoryController.update)
     .delete(authorize, categoryController.destroy);
 
 apiRouterSecure.route('/categories/:id/products')

@@ -1,6 +1,5 @@
 'use strict';
 const { Model } = require('sequelize');
-const { moneyFormat } = require('../helpers');
 module.exports = (sequelize, DataTypes) => {
 
     class Cart extends Model {

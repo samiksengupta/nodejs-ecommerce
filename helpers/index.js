@@ -29,7 +29,6 @@ module.exports = {
     },
 
     comparePassword: async (raw, hash) => {
-        console.log(raw, hash);
         return await bcrypt.compare(raw, hash);
     },
 

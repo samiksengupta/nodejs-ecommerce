@@ -27,6 +27,20 @@ module.exports = {
         check('refreshToken').trim().escape().not().isEmpty().withMessage('Refresh token cannot be empty').bail(),
         handleValidation
     ],
+    categoryCreate: [
+        check('slug').trim().escape().custom(value => {
+            return Category.findOne({ where: { slug: value } }).then(category => { if(category) return Promise.reject('Slug is already taken')} );
+        }),
+        check('name').trim().escape().not().isEmpty().withMessage('Name cannot be empty').bail().isLength({ min: 3 }).withMessage('Name must be minimum 3 characters').bail(),
+        handleValidation
+    ],
+    categoryUpdate: [
+        check('slug').trim().escape().custom((value, { req }) => {
+            return Category.findOne({ where: { slug: value, id: { [Op.not]: req.params.id } } }).then(category => { if(category) return Promise.reject('Slug is already taken')} );
+        }),
+        check('name').trim().escape().not().isEmpty().withMessage('Name cannot be empty').bail().isLength({ min: 3 }).withMessage('Name must be minimum 3 characters').bail(),
+        handleValidation
+    ],
     productCreate: [
         check('categoryId').trim().escape().custom(value => {
             return Category.findByPk(value).then(category => { if(!category) return Promise.reject('Category Id must be valid'); return Promise.resolve(); } );

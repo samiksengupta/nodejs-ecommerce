@@ -2,16 +2,12 @@ const { Op } = require("sequelize");
 const { handleServerErrorResponse, handleNotFoundResponse } = require("../helpers");
 const { Category, Product } = require("../models");
 
-const index = (req, res) => {
-    Category.findAll().then(items => {
-        res.status(200).json(items);
-        res.end();
-    }).catch(error => {
-        handleServerErrorResponse(res, error);
-    });
+const index = async (req, res) => {
+    const items = await Category.findAll().catch(error => handleServerErrorResponse(res, error));
+    res.status(200).json(items);
 }
 
-const indexProducts = (req, res) => {
+const indexProducts = async (req, res) => {
     let where = {};
     if(req.query.minprice || req.query.maxprice) {
         where[Op.and] = {
@@ -35,86 +31,44 @@ const indexProducts = (req, res) => {
             }
         };
     }
-    Category.findByPk(req.params.id, {
+    
+    const items = await Category.findByPk(req.params.id, {
         include: {
             model: Product,
             where: where
         }
-    }).then(data => {
-        if(data) {
-            res.status(200).json(data.Products);
-            res.end();
-        }
-        else {
-            handleNotFoundResponse(res);
-        }
-    }).catch(error => {
-        handleServerErrorResponse(res, error);
-    });
+    }).catch(error => handleServerErrorResponse(res, error));
+    res.status(200).json(items);
 }
 
-const create = (req, res) => {
-    Category.create({
+const create = async (req, res) => {
+    const data = await Category.create({
         slug: req.body.slug,
         name: req.body.name,
-    }).then(data => {
-        res.status(201).json(data);
-        res.end();
-    }).catch(error => {
-        handleServerErrorResponse(res, error);
-    });
+    }).catch(error => handleServerErrorResponse(res, error));
+    res.status(201).json(data);
 }
 
-const read = (req, res) => {
-    Category.findByPk(req.params.id).then(data => {
-        if(data) {
-            res.status(200).json(data);
-            res.end();
-        }
-        else {
-            handleNotFoundResponse(res);
-        }
-    }).catch(error => {
-        handleServerErrorResponse(res, error);
-    });
+const read = async (req, res) => {
+    const data = await Category.findByPk(req.params.id).catch(error => handleServerErrorResponse(res, error));
+    if(!data) handleNotFoundResponse(res);
+    res.status(200).json(data);
 }
 
-const update = (req, res) => {
-    Category.findByPk(req.params.id).then(data => {
-        if(data) {
-            data.slug = req.body.slug;
-            data.name = req.body.name;
-            data.save().then(data => {
-                res.status(200).json(data);
-                res.end();
-            }).catch(error => {
-                handleServerErrorResponse(res, error);
-            });
-        }
-        else {
-            handleNotFoundResponse(res);
-        }
-    }).catch(error => {
-        handleServerErrorResponse(res, error);
-    });
+const update = async (req, res) => {
+    let data = await Category.findByPk(req.params.id).catch(error => handleServerErrorResponse(res, error));
+    if(!data) handleNotFoundResponse(res);
+    data.slug = req.body.slug || data.slug;
+    data.name = req.body.name || data.name;
+    data = await data.save().catch(error => handleServerErrorResponse(res, error));;
+    res.status(200).json(data);
 }
 
-const destroy = (req, res) => {
-    Category.findByPk(req.params.id).then(data => {
-        if(data) {
-            data.destroy().then(data => {
-                res.status(200).json(data);
-                res.end();
-            }).catch(error => {
-                handleServerErrorResponse(res, error);
-            });
-        }
-        else {
-            handleNotFoundResponse(res);
-        }
-    }).catch(error => {
-        handleServerErrorResponse(res, error);
-    });
+const destroy = async (req, res) => {
+    let data = await Category.findByPk(req.params.id).catch(error => handleServerErrorResponse(res, error));
+    if(!data) handleNotFoundResponse(res);
+    data = await data.destroy().catch(error => handleServerErrorResponse(res, error));;
+    res.status(200).json(data);
 }
 
 module.exports = {
