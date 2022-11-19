@@ -1,4 +1,4 @@
-## Node JS CRM Backend Project
+## Node JS Ecommerce Backend Project
 
 This is a NodeJS powered Web Application, Backend and API Resource hub for it's client interface.
 
